@@ -51,18 +51,23 @@ public class Engine {
             window.pollEvents();
 
             long now = System.currentTimeMillis();
-            deltaUpdate += (now - initialTime) / timeU;
+            deltaUpdate += (now - initialTime) // 代表这次 while 循环消耗的时间
+                    / timeU; // 将 deltaUpdate 加上此次消耗的时间除以一次 Update 应当消耗的时间
             deltaFps += (now - initialTime) / timeR;
 
+            // 判断 targetFps <= 0 是为了处理一种特殊情况，即当 targetFps 被设置为 0 或负数时，游戏引擎将不限制帧率。
+            // 这意味着渲染和输入处理将尽可能频繁地进行，而不受帧率的限制。
+            // 这样可以确保在想要的时候能够以最高的帧率运行。
             if (targetFps <= 0 || deltaFps >= 1) {
                 appLogic.input(window, scene, now - initialTime);
             }
 
-            if (deltaUpdate >= 1) {
+            if (deltaUpdate >= 1) { // 如果 deltaUpdate 大于等于 1，说明应该进行一次 Update
                 long diffTimeMillis = now - updateTime;
                 appLogic.update(window, scene, diffTimeMillis);
-                updateTime = now;
-                deltaUpdate--;
+                updateTime = now; // 更新 updateTime
+                deltaUpdate -= 1; // 将 deltaUpdate 减去 1，表示已经进行了一次 Update
+                // 减 1 而不是直接置 0 是因为 deltaUpdate 可能大于 1，这样可以尽可能地减少误差
             }
 
             if (targetFps <= 0 || deltaFps >= 1) {

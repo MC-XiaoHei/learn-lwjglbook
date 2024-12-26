@@ -87,6 +87,7 @@ public class Window {
         if (callback != null) {
             callback.free();
         }
+        // 或许可以替换为 try-with-resources
     }
 
     public int getHeight() {
